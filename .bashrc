@@ -1,8 +1,8 @@
 # .bashrc
 
-if [ "$SSH_TTY" ]; then
+#if [ "$SSH_TTY" ]; then
 
-
+if [ "$(tty)" != "not a tty" ]; then
     # Source global definitions
     if [ -f /etc/bashrc ]; then
         . /etc/bashrc
@@ -63,14 +63,10 @@ if [ "$SSH_TTY" ]; then
         PS1+="$blueBold\\w "
 
         local bracketColor=$green
-        if [ -v job_bracket_color ]; then
-            bracketColor=job_bracket_color()
-        fi
+        test job_bracket_color &> /dev/null &&  bracketColor=$(job_bracket_color)
        
         local repo=`git rev-parse --show-toplevel 2> /dev/null`
-        if [ -v job_prompt ]; then 
-            job_prompt()
-        elif [[ -e "$repo" ]]; then
+        test job_prompt &> /dev/null && job_prompt || if [[ -e "$repo" ]]; then
             PS1+="$bracketColor($cyan$(bash -c 'git branch' | grep '\*' | tr -d '* ')$bracketColor)"
         fi
          
