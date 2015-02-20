@@ -1,15 +1,13 @@
 # .bashrc
 
-#if [ "$SSH_TTY" ]; then
-
 if [ "$(tty)" != "not a tty" ]; then
     # Source global definitions
     if [ -f /etc/bashrc ]; then
         . /etc/bashrc
     fi
 
-    if [ -f ~/scratch/base16-shell/base16-pop.dark.sh ]; then
-        ~/scratch/base16-shell/base16-pop.dark.sh
+    if [ -f ~/.dotfiles/extras/base-16-sh/base16-pop.dark.sh ]; then
+        . ~/.dotfiles/extras/base-16-sh/base16-pop.dark.sh
     fi
 
     if [ -f ~/.bash_job ]; then

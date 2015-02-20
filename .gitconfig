@@ -9,8 +9,6 @@
 	ui = auto
 [branch]
 	autosetuprebase = always
-[status]
-	showUntrackedFiles = yes
 [pack]
 	deltaCacheSize = 1073741824
 	compression = 9
