@@ -1,19 +1,82 @@
-[alias]
-	st = status
-	co = checkout
-	ci = commit
 [user]
 	name = Chris Pride
-	email = cpride@cpride.net
-[color]
-	ui = auto
 [branch]
 	autosetuprebase = always
 [pack]
 	deltaCacheSize = 1073741824
-	compression = 9
-	windowMemory = 4g
-	depth = 250
-	window = 25000
+        #compression = 9
+        #windowMemory = 16g
+	depth = 50
+	window = 10
 	deltaCacheLimit = 10000
-	threads = 32
+	threads = 28
+[core]
+    # Treat spaces before tabs, lines that are indented with 8 or more spaces, and all kinds of trailing whitespace as an error
+    whitespace = space-before-tab,indent-with-non-tab,trailing-space
+    askpass = ""
+    abbrev = 12
+[merge]
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
+[push]
+    default = simple
+[color]
+    # Use colors in Git commands that are capable of colored output when outputting to the terminal
+    ui = auto
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+[alias]
+    # Get the current branch name (not so useful in itself, but used in
+    # other aliases)
+    branch-name = "!git rev-parse --abbrev-ref HEAD"
+    # Push the current branch to the remote "origin", and set it to track
+    # the upstream branch
+    publish = "!f() { git push -u origin ${1-$(git branch-name)}; }; f"
+    # Delete the remote version of the current branch
+    unpublish = "!f() { git push origin --delete ${1-$(git branch-name)}; }; f"
+
+    # Unstage any files that have been added to the staging area
+    unstage = reset HEAD
+    unadd = reset HEAD
+
+    # Checkout our version of a file and add it
+    ours = "!f() { git checkout --ours $@; }; f"
+    # Checkout their version of a file and add it
+    theirs = "!f() { git checkout --theirs $@; }; f"
+
+    # Show commit log as a graph
+    graphlog = log --pretty=oneline -n 500 --graph --abbrev-commit
+
+    # Check to see how to commits are related.
+    is-ancestor = "!f() { \
+        if [ $# -ne 2 ]; then \
+            echo \"usage: git is-ancestor <REV1> <REV2>\n\"; \
+            exit 2; \
+        fi; \
+        if $( git merge-base --is-ancestor $1 $2 ); then \
+            echo \"$1 is an ancestor of $2\"; \
+            exit 0; \
+        elif $( git merge-base --is-ancestor $2 $1 ); then \
+            echo \"$2 is an ancestor of $1\"; \
+            exit 0; \
+        else \
+            echo \"$1 and $2 are not related\"; \
+            exit 1; \
+        fi \
+    }; \
+    f"
+    st = status
+    co = checkout
+    ci = commit
+
