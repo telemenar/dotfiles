@@ -61,10 +61,10 @@ if [ "$(tty)" != "not a tty" ]; then
         PS1+="$blueBold\\w "
 
         local bracketColor=$green
-        test job_bracket_color &> /dev/null &&  bracketColor=$(job_bracket_color)
+        type -t job_bracket_color &> /dev/null &&  bracketColor=$(job_bracket_color)
        
         local repo=`git rev-parse --show-toplevel 2> /dev/null`
-        test job_prompt &> /dev/null && job_prompt || if [[ -e "$repo" ]]; then
+        type -t job_prompt &> /dev/null && job_prompt || if [[ -e "$repo" ]]; then
             PS1+="$bracketColor($cyan$(bash -c 'git branch' | grep '\*' | tr -d '* ')$bracketColor)"
         fi
          
@@ -88,6 +88,11 @@ if [ "$(tty)" != "not a tty" ]; then
         . ~/.bash_aliases
     fi
 
+    if [ `uname` == "Darwin" ]; then
+        if [ -f $(brew --prefix)/etc/bash_completion ]; then
+            . $(brew --prefix)/etc/bash_completion
+        fi 
+    fi
 
 fi
 

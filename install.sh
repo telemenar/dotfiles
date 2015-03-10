@@ -29,3 +29,18 @@ for file in $files; do
     echo "Creating symlink to $file in home directory."
     ln -s $dir/.$file ~/.$file
 done
+
+if [ `uname` = "Darwin" ]; then
+    if [ ! $(which brew) ]; then
+        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+
+    brew install bash bash-completion vim git the_silver_searcher ninja mobile-shell 
+fi
+
+cd $dir
+git submodule init
+git submodule sync
+git submodule update
+
+
