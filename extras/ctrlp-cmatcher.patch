@@ -1,0 +1,446 @@
+From 0b90eca62f6afeff73471fb56aa961c1a3179c19 Mon Sep 17 00:00:00 2001
+From: Chris Pride <cpride@splunk.com>
+Date: Fri, 25 Jul 2014 13:57:41 -0700
+Subject: [PATCH] Fixup stuff.
+
+---
+ autoload/fuzzycomt.c |  80 +++++++++++----------
+ autoload/fuzzycomt.h |  11 ++-
+ autoload/matcher.vim | 199 +++++++++++++++++++++++++--------------------------
+ 3 files changed, 150 insertions(+), 140 deletions(-)
+
+diff --git a/autoload/fuzzycomt.c b/autoload/fuzzycomt.c
+index ec4812462d7c..3c6510445acd 100644
+--- a/autoload/fuzzycomt.c
++++ b/autoload/fuzzycomt.c
+@@ -26,7 +26,26 @@
+ #include "fuzzycomt.h"
+ 
+ // Forward declaration for ctrlp_get_line_matches
+-matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode);
++matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, mmode_t mmode);
++
++mmode_t getMMode(char *mmode) {
++    mmode_t result = fullLine;
++    if (mmode[0] == 'f') {
++        if (mmode[1] == 'i') {
++            if (mmode[2] == 'l') {
++                result = filenameOnly;
++            } else {
++                result = firstNonTab;
++            }
++        } else {
++            result = fullLine;
++        }
++    } else {
++        result = untilLastTab;
++    }
++
++    return result;
++}
+ 
+ void ctrlp_get_line_matches(PyObject* paths,
+                             PyObject* abbrev,
+@@ -35,11 +54,14 @@ void ctrlp_get_line_matches(PyObject* paths,
+ {
+     int i;
+     int max;
++
++    mmode_t mmodeEnum = getMMode(mmode);
++
+     // iterate over lines and get match score for every line
+     for (i = 0, max = PyList_Size(paths); i < max; i++) {
+         PyObject* path = PyList_GetItem(paths, i);
+         matchobj_t match;
+-        match = ctrlp_find_match(path, abbrev, mmode);
++        match = ctrlp_find_match(path, abbrev, mmodeEnum);
+         matches[i] = match;
+     }
+ }
+@@ -53,29 +75,18 @@ char *strduplicate(const char *s) {
+ }
+ 
+ char *slashsplit(char *line) {
+-    char *pch, *linedup;
+-    char *fname = "";
+-
+-    // we need to create a copy of input string because strtok() changes string
+-    // while splitting. Need to call free() when linedup is not needed.
+-    linedup = strduplicate(line);
+-
+-    pch = strtok(linedup, "/");
+-
+-    while (pch != NULL)
+-    {
+-        fname = pch;
+-        pch = strtok(NULL, "/");
++    char *fname = line;
++    char *scan = fname;
++    while (scan != '\0')
++    {   
++        if (*scan == '/') {
++            fname = ++scan;
++        } else {
++            ++scan;
++        }
+     }
+ 
+-    // We need to get a copy of a filename because fname is a pointer to the
+-    // start of filename in linedup string which will be free'd. We need to
+-    // call free() when return value of func will not be needed.
+-    char *retval = strduplicate(fname);
+-
+-    free(linedup);
+-
+-   return retval;
++   return fname;
+ }
+ 
+ // comparison function for use with qsort
+@@ -123,7 +134,8 @@ double ctrlp_recursive_match(matchinfo_t *m,    // sharable meta-data
+                        long haystack_idx, // where in the path string to start
+                        long needle_idx,   // where in the needle string to start
+                        long last_idx,     // location of last matched character
+-                       double score)      // cumulative score so far
++                       double score,      // cumulative score so far
++                       mmode_t mmode)
+ {
+     double seen_score = 0;  // remember best score seen via recursion
+     long i, j, distance;
+@@ -153,7 +165,9 @@ double ctrlp_recursive_match(matchinfo_t *m,    // sharable meta-data
+              j++, haystack_idx++) {
+ 
+             char d = m->haystack_p[j];
+-            if (d == '.') {
++            if (d == '\t' && mmode == firstNonTab) {
++                break;
++            } else if (d == '.') {
+                 if (j == 0 || m->haystack_p[j - 1] == '/') {
+                     m->dot_file = 1; // this is a dot-file
+                 }
+@@ -181,7 +195,7 @@ double ctrlp_recursive_match(matchinfo_t *m,    // sharable meta-data
+                         factor = 0.8;
+                     else if (last >= 'a' && last <= 'z' &&
+                             curr >= 'A' && curr <= 'Z')
+-                        factor = 0.8;
++                        factor = 0.9;
+                     else if (last == '.')
+                         factor = 0.7;
+                     else
+@@ -194,7 +208,7 @@ double ctrlp_recursive_match(matchinfo_t *m,    // sharable meta-data
+                 if (++j < m->haystack_len) {
+                     // bump cursor one char to the right and
+                     // use recursion to try and find a better match
+-                    double sub_score = ctrlp_recursive_match(m, j, i, last_idx, score);
++                    double sub_score = ctrlp_recursive_match(m, j, i, last_idx, score, mmode);
+                     if (sub_score > seen_score)
+                         seen_score = sub_score;
+                 }
+@@ -350,7 +364,7 @@ PyObject* ctrlp_fuzzycomt_sorted_match_list(PyObject* self, PyObject* args) {
+ }
+ 
+ 
+-matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode)
++matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, mmode_t mmode)
+ {
+     long i, max;
+     double score;
+@@ -371,7 +385,7 @@ matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode)
+     }
+ 
+     matchinfo_t m;
+-    if (strcmp(mmode, "filename-only") == 0) {
++    if (mmode == filenameOnly) {
+         // get file name by splitting string on slashes
+         m.haystack_p = slashsplit(temp_string);
+         m.haystack_len = strlen(m.haystack_p);
+@@ -407,13 +421,7 @@ matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode)
+             memo[i] = DBL_MAX;
+         m.memo = memo;
+ 
+-        score = ctrlp_recursive_match(&m, 0, 0, 0, 0.0);
+-    }
+-
+-    // need to free memory because strdump() function in slashsplit() uses
+-    // malloc to allocate memory, otherwise memory will leak
+-    if (strcmp(mmode, "filename-only") == 0) {
+-        free(m.haystack_p);
++        score = ctrlp_recursive_match(&m, 0, 0, 0, 0.0, mmode);
+     }
+ 
+     // Free memory after strdup()
+diff --git a/autoload/fuzzycomt.h b/autoload/fuzzycomt.h
+index 55d4ded0f394..941e6ee7f2bd 100644
+--- a/autoload/fuzzycomt.h
++++ b/autoload/fuzzycomt.h
+@@ -28,6 +28,15 @@
+ #include <string.h>
+ #include <assert.h>
+ 
++
++
++typedef enum mmode {
++    fullLine,
++    filenameOnly,
++    firstNonTab,
++    untilLastTab
++} mmode_t;
++
+ typedef struct {
+     PyObject *str;                       // Python object with file path
+     double  score;                       // score of string
+@@ -43,7 +52,7 @@ typedef struct {
+     double  *memo;                       // memoization
+ } matchinfo_t;
+ 
+-matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode);
++matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, mmode_t mmode);
+ 
+ void ctrlp_get_line_matches(PyObject* paths, PyObject* abbrev, matchobj_t matches[], char *mode);
+ 
+diff --git a/autoload/matcher.vim b/autoload/matcher.vim
+index a55bd3418c1d..5e777fa58f88 100644
+--- a/autoload/matcher.vim
++++ b/autoload/matcher.vim
+@@ -14,12 +14,12 @@ let s:matcher_pycmd = has('python') ? 'py' : 'py3'
+ let s:matcher_pyeval = s:matcher_pycmd.'eval'
+ 
+ if exists('*'. s:matcher_pyeval)
+-  let s:pyeval = function(s:matcher_pyeval)
++    let s:pyeval = function(s:matcher_pyeval)
+ else
+-  exec s:matcher_pycmd 'import json, vim'
+-  exec "function! s:pyeval(e)\n".
+-  \   s:matcher_pycmd." vim.command('return ' + json.dumps(eval(vim.eval('a:e'))))\n".
+-  \"endfunction"
++    exec s:matcher_pycmd 'import json, vim'
++    exec "function! s:pyeval(e)\n".
++                \   s:matcher_pycmd." vim.command('return ' + json.dumps(eval(vim.eval('a:e'))))\n".
++                \"endfunction"
+ endif
+ 
+ let s:script_folder_path = escape( expand( '<sfile>:p:h' ), '\' )
+@@ -40,6 +40,9 @@ fu! s:matchfname(item, pat)
+ endf
+ 
+ fu! s:cmatcher(lines, input, limit, mmode, ispath, crfile)
++    " PYTHON UNINDENTED CODE BEGIN
++
++
+ python << EOF
+ lines = vim.eval('a:lines')
+ searchinp = vim.eval('a:input')
+@@ -60,16 +63,19 @@ try:
+ except:
+   matchlist = []
+ EOF
+-return s:pyeval("matchlist")
++
++
++    " PYTHON UNINDENTED CODE END 
++    return s:pyeval("matchlist")
+ endf
+ 
+ fu! s:escapechars(chars)
+-  if exists('+ssl') && !&ssl
+-    cal map(a:chars, 'escape(v:val, ''\'')')
+-  en
+-  for each in ['^', '$', '.']
+-    cal map(a:chars, 'escape(v:val, each)')
+-  endfo
++    if exists('+ssl') && !&ssl
++        cal map(a:chars, 'escape(v:val, ''\'')')
++    en
++    for each in ['^', '$', '.']
++        cal map(a:chars, 'escape(v:val, each)')
++    endfo
+ 
+   return a:chars
+ endfu
+@@ -78,105 +84,92 @@ fu! s:highlight(input, mmode, regex)
+     " highlight matches
+     cal clearmatches()
+     if a:regex
+-      let pat = ""
+-      if a:mmode == "filename-only"
+-        let pat = substitute(a:input, '\$\@<!$', '\\ze[^\\/]*$', 'g')
+-      en
+-      if empty(pat)
+-        let pat = substitute(a:input, '\\\@<!\^', '^> \\zs', 'g')
+-      en
+-      cal matchadd('CtrlPMatch', '\c'.pat)
++        let pat = ""
++        if a:mmode == "filename-only"
++            let pat = substitute(a:input, '\$\@<!$', '\\ze[^\\/]*$', 'g')
++        en
++        if empty(pat)
++            let pat = substitute(a:input, '\\\@<!\^', '^> \\zs', 'g')
++        en
++        cal matchadd('CtrlPMatch', '\c'.pat)
+     el
+-      let chars = split(a:input, '\zs')
+-      let chars = s:escapechars(chars)
+-
+-      " Build a pattern like /a.*b.*c/ from abc (but with .\{-} non-greedy
+-      " matchers instead)
+-      let pat = join(chars, '.\{-}')
+-      " Ensure we match the last version of our pattern
+-      let ending = '\(.*'.pat.'\)\@!'
+-      " Case insensitive
+-      let beginning = '\c^.*'
+-      if a:mmode == "filename-only"
+-        " Make sure there are no slashes in our match
+-        let beginning = beginning.'\([^\/]*$\)\@='
+-      end
+-
+-      for i in range(len(a:input))
+-        " Surround our current target letter with \zs and \ze so it only
+-        " actually matches that one letter, but has all preceding and trailing
+-        " letters as well.
+-        " \zsa.*b.*c
+-        " a\(\zsb\|.*\zsb)\ze.*c
+-        let charcopy = copy(chars)
+-        if i == 0
+-          let charcopy[i] = '\zs'.charcopy[i].'\ze'
+-          let middle = join(charcopy, '.\{-}')
+-        else
+-          let before = join(charcopy[0:i-1], '.\{-}')
+-          let after = join(charcopy[i+1:-1], '.\{-}')
+-          let c = charcopy[i]
+-          " for abc, match either ab.\{-}c or a.*b.\{-}c in that order
+-          let cpat = '\(\zs'.c.'\|'.'.*\zs'.c.'\)\ze.*'
+-          let middle = before.cpat.after
+-        endif
+-
+-        " Now we matchadd for each letter, the basic form being:
+-        " ^.*\zsx\ze.*$, but with our pattern we built above for the letter,
+-        " and a negative lookahead ensuring that we only highlight the last
+-        " occurrence of our letters. We also ensure that our matcher is case
+-        " insensitive.
+-        cal matchadd('CtrlPMatch', beginning.middle.ending)
+-      endfor
++        let chars = split(a:input, '\zs')
++        let chars = s:escapechars(chars)
++
++        " Build a pattern like /a.*b.*c/ from abc (but with .\{-} non-greedy
++        " matchers instead)
++        let pat = join(chars, '.\{-}')
++        " Ensure we match the last version of our pattern
++        let ending = '\(.*'.pat.'\)\@!'
++        " Case insensitive
++        let beginning = '\c^.*'
++        if a:mmode == "filename-only"
++            " Make sure there are no slashes in our match
++            let beginning = beginning.'\([^\/]*$\)\@='
++        end
++
++        for i in range(len(a:input))
++            " Surround our current target letter with \zs and \ze so it only
++            " actually matches that one letter, but has all preceding and trailing
++            " letters as well.
++            " \zsa.*b.*c
++            " a\(\zsb\|.*\zsb)\ze.*c
++            let charcopy = copy(chars)
++            if i == 0
++                let charcopy[i] = '\zs'.charcopy[i].'\ze'
++                let middle = join(charcopy, '.\{-}')
++            else
++                let before = join(charcopy[0:i-1], '.\{-}')
++                let after = join(charcopy[i+1:-1], '.\{-}')
++                let c = charcopy[i]
++                " for abc, match either ab.\{-}c or a.*b.\{-}c in that order
++                let cpat = '\(\zs'.c.'\|'.'.*\zs'.c.'\)\ze.*'
++                let middle = before.cpat.after
++            endif
++
++            " Now we matchadd for each letter, the basic form being:
++            " ^.*\zsx\ze.*$, but with our pattern we built above for the letter,
++            " and a negative lookahead ensuring that we only highlight the last
++            " occurrence of our letters. We also ensure that our matcher is case
++            " insensitive.
++            cal matchadd('CtrlPMatch', beginning.middle.ending)
++        endfor
+     en
+     cal matchadd('CtrlPLinePre', '^>')
+ endf
+ 
+ fu! matcher#cmatch(lines, input, limit, mmode, ispath, crfile, regex)
+-  if a:input == ''
+-    " Clear matches, that left from previous matches
+-    cal clearmatches()
+-    " Hack to clear s:savestr flag in SplitPattern, otherwise matching in
+-    " 'tag' mode will work only from 2nd char.
+-    cal ctrlp#call('s:SplitPattern', '')
+-    let array = a:lines[0:a:limit]
+-    if a:ispath && !empty(a:crfile)
+-      cal remove(array, index(array, a:crfile))
+-    en
+-    return array
+-  el
+-    if a:regex
+-      let array = []
+-      let func = a:mmode == "filename-only" ? 's:matchfname' : 'match'
+-      for item in a:lines
+-        if call(func, [item, a:input]) >= 0
+-          cal add(array, item)
+-        endif
+-      endfor
+-      cal sort(array, ctrlp#call('s:mixedsort'))
+-      cal s:highlight(a:input, a:mmode, a:regex)
+-      return array
+-    endif
+-    " use built-in matcher if mmode set to match until first tab ( in other case
+-    " tag.vim doesnt work
+-    if a:mmode == "first-non-tab"
+-      let array = []
+-      " call ctrlp.vim function to get proper input pattern
+-      let pat = ctrlp#call('s:SplitPattern', a:input)
+-      for item in a:lines
+-        if call('s:matchtabs', [item, pat]) >= 0
+-          cal add(array, item)
++    if a:input == ''
++        " Clear matches, that left from previous matches
++        cal clearmatches()
++        " Hack to clear s:savestr flag in SplitPattern, otherwise matching in
++        " 'tag' mode will work only from 2nd char.
++        cal ctrlp#call('s:SplitPattern', '')
++        let array = a:lines[0:a:limit]
++        if a:ispath && !empty(a:crfile)
++            cal remove(array, index(array, a:crfile))
+         en
+-      endfo
+-      "TODO add highlight
+-      cal sort(array, ctrlp#call('s:mixedsort'))
+-      return array
+-    en
++        return array
++    el
++        if a:regex
++            let array = []
++            let func = a:mmode == "filename-only" ? 's:matchfname' : 'match'
++            for item in a:lines
++                if call(func, [item, a:input]) >= 0
++                    cal add(array, item)
++                endif
++            endfor
++            cal sort(array, ctrlp#call('s:mixedsort'))
++            cal s:highlight(a:input, a:mmode, a:regex)
++            return array
++        endif
++        " use built-in matcher if mmode set to match until first tab ( in other case
++        " tag.vim doesnt work
+ 
+-    let matchlist = s:cmatcher(a:lines, a:input, a:limit, a:mmode, a:ispath, a:crfile)
+-  en
++        let matchlist = s:cmatcher(a:lines, a:input, a:limit, a:mmode, a:ispath, a:crfile)
++    en
+ 
+-  cal s:highlight(a:input, a:mmode, a:regex)
++    cal s:highlight(a:input, a:mmode, a:regex)
+ 
+-  return matchlist
++    return matchlist
+ endf
+-- 
+2.3.1
+
