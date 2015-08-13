@@ -35,7 +35,7 @@ if [ `uname` = "Darwin" ]; then
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    brew install bash bash-completion vim git the_silver_searcher ninja mobile-shell 
+    brew install bash bash-completion vim git the_silver_searcher ninja 
 fi
 
 cd $dir

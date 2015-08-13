@@ -60,7 +60,7 @@
     " " let Vundle manage Vundle, required
     " The vim plugin manager
     " Install this manually with:
-    " git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    " git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/vundle
     " To install/update other plugins run
     " vim +BundleInstall or vim +BundleUpdate
     Bundle 'gmarik/vundle'
@@ -79,11 +79,10 @@
     " Cpride's color scheme
     Bundle 'chriskempson/base16-vim'
 
-    " Meh
-    Bundle 'octol/vim-cpp-enhanced-highlight'
-
     " Script for switching between headers and cpp/c files
     Bundle 'vim-scripts/a.vim'
+
+    Plugin 'octol/vim-cpp-enhanced-highlight'
 
     " Script for the vim part of rigging movement keys to be unified between
     " tmux and vim
@@ -105,10 +104,13 @@
     " need compilation
     Bundle 'JazzCore/ctrlp-cmatcher'
     
-    " A script to extend airline to tmus status lines, I don't currently use
-    " it.
-    Bundle 'edkolev/tmuxline.vim'
-    "Bundle 'git://git.wincent.com/command-t.git'
+    " Rtags integration
+    Bundle 'lyuts/vim-rtags'
+
+    Bundle 'majutsushi/tagbar'
+
+    Bundle 'airblade/vim-gitgutter'
+
 " }
 
 " General {
@@ -196,6 +198,8 @@
     " let perl_extended_vars=1 " highlight advanced perl vars 
                               " inside strings
     set wildignore+=*.o,*.obj,.git,CMakeFiles,doc,CMakeCache.txt,contrib
+
+    let g:cpp_class_scope_highlight = 1
     
     let g:ycm_extra_conf_globlist = ['~/src/*','~/src-p4/*','!~/*','!/*']
 
@@ -226,7 +230,8 @@
       \ }
      let g:airline#extensions#whitespace#enabled = 0
      let g:airline#extensions#tmuxline#enabled = 0 
-     "     let g:airline_section_b= '%{perforce#RulerStatus()}'
+     let g:airline#extensions#tabline#enabled = 1
+
      let g:ctrlp_extensions = ['tag', 'buffertag']
      let g:ctrlp_clear_cache_on_exit = 0
      let g:ctrlp_match_window = 'order:ttb'
@@ -271,9 +276,11 @@
     " The Silver Searcher
     " Use ag over grep
     let g:agprg='/home/cpride/tools/bin/ag  --nocolor -G "^.*\.(cpp\|h\|c\|.in\|conf)$" --ignore=CMakeFiles --ignore=contrib --nogroup --column --ignore=python-site'
+    
+    let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s \( -type d -name .git -prune \) -o \( -type d -name .svn -prune \) -o \( -type d -name .deps -prune \) -o \( -type d -name .libs -prune \) -o ${EXCLUDE_CONTRIB} \( -type d -path "${EXCLUDE_MINIFIED_JS}" -prune \) -o \( -type d -name logs -prune \) -o \( -type d -name CVS -prune \) -o \( -type f -name "*.[oa]" -prune \) -o \( -type f -name "*.l[oa]" -prune \) -o \( -type f -name "*.so" -prune \) -o \( -type f -name ".*.swp" -prune \) -o \( -type f -iname "*.txt" -prune \) -o \( -type f -iname "*.csv" -prune \) -o -type f']
 
     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-    let g:ctrlp_user_command = 'ag %s -l --ignore search_mrsparkle --ignore CMakeFiles --ignore contrib --ignore "*.js" --ignore "*.py" --ignore "*.png" --ignore "*.html" --ignore "*.css" --ignore "*.xml" -G "^.*\.(cpp\|h\|c\|.in)$" --nocolor -g ""'
+    "let g:ctrlp_user_command = 'ag %s -l --ignore search_mrsparkle --ignore CMakeFiles --ignore contrib --ignore "*.js" --ignore "*.py" --ignore "*.png" --ignore "*.html" --ignore "*.css" --ignore "*.xml" -G "^.*\.(cpp\|h\|c\|.in)$" --nocolor -g ""'
 
     " ag is fast enough that CtrlP doesn't need to cache
     " let g:ctrlp_use_caching = 0
@@ -289,4 +296,5 @@
    "     map <up> <ESC>:bp<RETURN>
     " }
 " }
+
 
