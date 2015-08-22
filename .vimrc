@@ -51,7 +51,7 @@
     filetype off
 
     " set the runtime path to include Vundle and initialize
-    set rtp+=~/.vim/bundle/Vundle.vim/
+    set rtp+=~/.vim/bundle/vundle/
     call vundle#rc()
     " " alternatively, pass a path where Vundle should install bundles
     " "let path = '~/some/path/here'
@@ -82,14 +82,15 @@
     " Script for switching between headers and cpp/c files
     Bundle 'vim-scripts/a.vim'
 
-    Plugin 'octol/vim-cpp-enhanced-highlight'
+    Bundle 'octol/vim-cpp-enhanced-highlight'
 
     " Script for the vim part of rigging movement keys to be unified between
     " tmux and vim
     Bundle 'christoomey/vim-tmux-navigator'
 
     " Integrated grep like plugin
-    Bundle 'rking/ag.vim'
+    " Bundle 'rking/ag.vim'
+    Bundle 'mileszs/ack.vim'
 
     " Pretty status prompt
     Bundle 'bling/vim-airline'
@@ -102,7 +103,7 @@
 
     " Faster fuzzy matching for ctrlp
     " need compilation
-    Bundle 'JazzCore/ctrlp-cmatcher'
+    Bundle 'telemenar/ctrlp-cmatcher'
     
     " Rtags integration
     Bundle 'lyuts/vim-rtags'
@@ -212,6 +213,10 @@
     let g:airline_left_alt_sep = ''
     let g:airline_right_sep = ''
     let g:airline_right_alt_sep = ''
+    let g:airline#extensions#tabline#left_sep = ''
+    let g:airline#extensions#tabline#left_alt_sep = ''
+    let g:airline#extensions#tabline#right_sep = ''
+    let g:airline#extensions#tabline#right_alt_sep = ''
     let g:airline_symbols.branch = ''
     let g:airline_symbols.readonly = ''
     let g:airline_symbols.linenr = ''
@@ -237,8 +242,7 @@
      let g:ctrlp_match_window = 'order:ttb'
      let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 
-     
-     "let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files']
+     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s \( -type d -name .git -prune \) -o \( -type d -name .svn -prune \) -o \( -type d -name .deps -prune \) -o \( -type d -name .libs -prune \) -o ${EXCLUDE_CONTRIB} \( -type d -path "${EXCLUDE_MINIFIED_JS}" -prune \) -o \( -type d -name logs -prune \) -o \( -type d -name CVS -prune \) -o \( -type f -name "*.[oa]" -prune \) -o \( -type f -name "*.l[oa]" -prune \) -o \( -type f -name "*.so" -prune \) -o \( -type f -name ".*.swp" -prune \) -o \( -type f -iname "*.txt" -prune \) -o \( -type f -iname "*.csv" -prune \) -o -type f']
      let g:ctrlp_lazy_update = 100
 
      let g:ctrlp_buftag_types = {
@@ -246,20 +250,23 @@
                  \ '--extra=+q',
                  \ } 
 
+     let g:ack_autofold_results = 1
+     let g:ackprg = "git grep -n"
 " }
 
 " Mappings {
     " space / shift-space scroll in normal mode
-    noremap <leader>t :CtrlP<CR>
-    noremap <leader>b :CtrlPBuffer<CR>
-    noremap <leader>R :CtrlPTag<CR>
-    noremap <leader>r :CtrlPBufTag<CR>
+    noremap <leader>tt :CtrlP<CR>
+    noremap <leader>tb :CtrlPBuffer<CR>
+    noremap <leader>tR :CtrlPTag<CR>
+    noremap <leader>tr :CtrlPBufTag<CR>
     noremap <S-space> <C-b>
     noremap <space> <C-f>
 
-    noremap <C-f><C-f> :YcmCompleter GoToDeclaration<CR>
-    noremap <C-f><C-i> :YcmCompleter GoToDefinition<CR>
-    noremap <C-f><C-c> :YcmCompleter ClearCompilationFlagCache<CR>
+    let g:rtagsUseDefaultMappings = 0
+    noremap <C-f><C-f> :call rtags#JumpTo()<CR>
+    noremap <C-f><C-i> :call rtags#SymbolInfo()<CR>
+    noremap <C-f><C-r> :call rtags#FindRefs()<CR>
 
     noremap <C-b> :split<CR>
     noremap <C-v> :vsplit<CR>
@@ -275,9 +282,6 @@
 
     " The Silver Searcher
     " Use ag over grep
-    let g:agprg='/home/cpride/tools/bin/ag  --nocolor -G "^.*\.(cpp\|h\|c\|.in\|conf)$" --ignore=CMakeFiles --ignore=contrib --nogroup --column --ignore=python-site'
-    
-    let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s \( -type d -name .git -prune \) -o \( -type d -name .svn -prune \) -o \( -type d -name .deps -prune \) -o \( -type d -name .libs -prune \) -o ${EXCLUDE_CONTRIB} \( -type d -path "${EXCLUDE_MINIFIED_JS}" -prune \) -o \( -type d -name logs -prune \) -o \( -type d -name CVS -prune \) -o \( -type f -name "*.[oa]" -prune \) -o \( -type f -name "*.l[oa]" -prune \) -o \( -type f -name "*.so" -prune \) -o \( -type f -name ".*.swp" -prune \) -o \( -type f -iname "*.txt" -prune \) -o \( -type f -iname "*.csv" -prune \) -o -type f']
 
     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
     "let g:ctrlp_user_command = 'ag %s -l --ignore search_mrsparkle --ignore CMakeFiles --ignore contrib --ignore "*.js" --ignore "*.py" --ignore "*.png" --ignore "*.html" --ignore "*.css" --ignore "*.xml" -G "^.*\.(cpp\|h\|c\|.in)$" --nocolor -g ""'
@@ -286,7 +290,7 @@
     " let g:ctrlp_use_caching = 0
 
     " bind K to grep word under cursor
-    nnoremap K :Ag! "\b<C-R><C-W>\b" "src/" "cfg/bundles/default/" "cfg/bundles/README/" <CR>
+    nnoremap K :Ack! "\b<C-R><C-W>\b" "src/" "cfg/bundles/default/" "cfg/bundles/README/" <CR>
 
 
     " Make Arrow Keys Useful Again {

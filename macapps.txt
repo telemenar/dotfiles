@@ -1,0 +1,21 @@
+Apps to download/install
+Dropbox - https://dropbox.com/download
+1Password - https://agilebits.com/downloads
+iTerm - https://iterm2.com/downloads.html
+Sublime Text 3 - https://www.sublimetext.com/3
+Alfred - http://www.alfredapp.com/#download
+iStatMenus - http://bjango.com/mac/istatmenus/
+OmniFocus - https://www.omnigroup.com/download
+OmniGraffle - https://itunes.apple.com/us/app/omnigraffle-6/id711830901?mt=12
+
+Work:
+Hipchat https://www.hipchat.com/downloads
+RescueTime https://www.rescuetime.com/download
+Install
+Login
+
+Configs to change:
+Multi-finger swipe
+Hot-corner
+Finder side-bar
+Safari Disable Passwords
