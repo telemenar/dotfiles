@@ -51,7 +51,7 @@
     filetype off
 
     " set the runtime path to include Vundle and initialize
-    set rtp+=~/.vim/bundle/vundle/
+    set rtp+=~/.vim/bundle/Vundle.vim/
     call vundle#rc()
     " " alternatively, pass a path where Vundle should install bundles
     " "let path = '~/some/path/here'
@@ -60,10 +60,10 @@
     " " let Vundle manage Vundle, required
     " The vim plugin manager
     " Install this manually with:
-    " git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/vundle
+    " git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/vundle
     " To install/update other plugins run
     " vim +BundleInstall or vim +BundleUpdate
-    Bundle 'gmarik/vundle'
+    Bundle 'VundleVim/Vundle.vim'
 
     " YouCompleteMe
     " Clang based auto complete and symbol navigation
@@ -146,7 +146,9 @@
 
     set ttyfast
     set mouse=a
-    set ttym=sgr
+    if !has('nvim')
+        set ttymouse=sgr
+    endif
 " }
 
 " Vim UI {
@@ -236,6 +238,7 @@
      let g:airline#extensions#whitespace#enabled = 0
      let g:airline#extensions#tmuxline#enabled = 0 
      let g:airline#extensions#tabline#enabled = 1
+     let g:airline#extensions#tabline#show_buffers = 0
 
      let g:ctrlp_extensions = ['tag', 'buffertag']
      let g:ctrlp_clear_cache_on_exit = 0
@@ -272,6 +275,7 @@
     noremap <C-v> :vsplit<CR>
 
     noremap <C-g> <C-w>q
+    noremap <C-G> :bd
 
     inoremap jk <Esc>
     
