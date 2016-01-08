@@ -6,6 +6,10 @@ if [ "$(tty)" != "not a tty" ]; then
         . /etc/bashrc
     fi
 
+    if [ -f /usr/libexec/java_home ]; then
+        export JAVA_HOME=$(/usr/libexec/java_home)
+    fi
+
     if [ -f ~/.dotfiles/extras/base-16-sh/base16-pop.dark.sh ]; then
         . ~/.dotfiles/extras/base-16-sh/base16-pop.dark.sh
     fi
@@ -96,3 +100,5 @@ if [ "$(tty)" != "not a tty" ]; then
 
 fi
 
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

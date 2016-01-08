@@ -9,7 +9,9 @@
 " }
 
 " Basics {
-    set nocompatible " explicitly get out of vi-compatible mode
+    if !has('nvim')
+        set nocompatible " explicitly get out of vi-compatible mode
+    endif
     set noexrc " don't use local version of .(g)vimrc, .exrc
     set background=dark " we plan to use a dark background
     set cpoptions=aABceFsmq
@@ -48,69 +50,63 @@
 " }
 
 " Plugin Manager {
-    filetype off
-
-    " set the runtime path to include Vundle and initialize
-    set rtp+=~/.vim/bundle/Vundle.vim/
-    call vundle#rc()
-    " " alternatively, pass a path where Vundle should install bundles
-    " "let path = '~/some/path/here'
-    " "call vundle#rc(path)
-    "
-    " " let Vundle manage Vundle, required
-    " The vim plugin manager
-    " Install this manually with:
-    " git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/vundle
-    " To install/update other plugins run
-    " vim +BundleInstall or vim +BundleUpdate
-    Bundle 'VundleVim/Vundle.vim'
+    " curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    "     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    call plug#begin('~/.vim/plugged')
 
     " YouCompleteMe
     " Clang based auto complete and symbol navigation
     " Needs some compile steps.
-    Bundle 'Valloric/YouCompleteMe' 
+    Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' } 
     " Baseline variant of this plugin
-    " Bundle 'oblitum/YouCompleteMe' 
+    " Plug 'oblitum/YouCompleteMe' 
     " Variant with automaticlly completing function parameters.
 
     " Vim movement plugin, just recommend googling it. 
-    Bundle 'Lokaltog/vim-easymotion'
+    " Plug 'Lokaltog/vim-easymotion'
 
     " Cpride's color scheme
-    Bundle 'chriskempson/base16-vim'
+    Plug 'chriskempson/base16-vim'
 
     " Script for switching between headers and cpp/c files
-    Bundle 'vim-scripts/a.vim'
+    Plug 'vim-scripts/a.vim'
 
-    Bundle 'octol/vim-cpp-enhanced-highlight'
+    Plug 'octol/vim-cpp-enhanced-highlight'
 
     " Script for the vim part of rigging movement keys to be unified between
     " tmux and vim
-    Bundle 'christoomey/vim-tmux-navigator'
+    Plug 'christoomey/vim-tmux-navigator'
 
     " Integrated grep like plugin
-    " Bundle 'rking/ag.vim'
-    Bundle 'mileszs/ack.vim'
+    " Plug 'rking/ag.vim'
+    Plug 'mileszs/ack.vim'
 
     " Pretty status prompt
-    Bundle 'bling/vim-airline'
+    Plug 'bling/vim-airline'
 
     " Awesome git integration
-    Bundle 'tpope/vim-fugitive'
+    Plug 'tpope/vim-fugitive'
 
     " Fuzzy completion code navigation plugin
-    Bundle 'kien/ctrlp.vim'
+    "Plug 'ctrlpvim/ctrlp.vim'
+    "Plug 'kien/ctrlp.vim'
+
+    " Plugin outside ~/.vim/plugged with post-update hook
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
 
     " Faster fuzzy matching for ctrlp
     " need compilation
-    Bundle 'telemenar/ctrlp-cmatcher'
+    "Plug 'telemenar/ctrlp-cmatcher', { 'do': './install.sh' }
     
     " Rtags integration
-    Bundle 'lyuts/vim-rtags'
+    Plug 'lyuts/vim-rtags'
 
-    Bundle 'majutsushi/tagbar'
+    Plug 'majutsushi/tagbar'
 
-    Bundle 'airblade/vim-gitgutter'
+    Plug 'airblade/vim-gitgutter'
+
+    call plug#end()
 
 " }
 
@@ -144,9 +140,9 @@
                     \*.jpg,*.gif,*.png
     set wildmode=list:longest " turn on wild mode huge list
 
-    set ttyfast
     set mouse=a
     if !has('nvim')
+        set ttyfast
         set ttymouse=sgr
     endif
 " }
@@ -255,14 +251,17 @@
 
      let g:ack_autofold_results = 1
      let g:ackprg = "git grep -n"
+
+     let g:fzf_commits_log_options = '--color=always --format="%C(auto)%h%d <%cn> %s %C(blue)%C(bold)%cr"'
+     let g:fzf_layout = { 'down': '~25%' }
 " }
 
 " Mappings {
     " space / shift-space scroll in normal mode
-    noremap <leader>tt :CtrlP<CR>
-    noremap <leader>tb :CtrlPBuffer<CR>
-    noremap <leader>tR :CtrlPTag<CR>
-    noremap <leader>tr :CtrlPBufTag<CR>
+    noremap <leader>tt :GitFiles<CR>
+    noremap <leader>tb :Buffers<CR>
+    noremap <leader>tR :Tags<CR>
+    noremap <leader>tr :BTags<CR>
     noremap <S-space> <C-b>
     noremap <space> <C-f>
 
@@ -275,14 +274,11 @@
     noremap <C-v> :vsplit<CR>
 
     noremap <C-g> <C-w>q
-    noremap <C-G> :bd
+    noremap <C-G> :bd<CR>
 
     inoremap jk <Esc>
     
     noremap  :A<CR> 
-
-
-
 
     " The Silver Searcher
     " Use ag over grep
@@ -304,5 +300,4 @@
    "     map <up> <ESC>:bp<RETURN>
     " }
 " }
-
 

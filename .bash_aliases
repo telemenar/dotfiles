@@ -20,3 +20,10 @@ function gitRepack() {
     git repack -a -d -f --window=10000 --depth=100 --window-memory=1500m
 }
 
+export FZF_DEFAULT_OPTS='--reverse --inline-info'
+
+if [ -r `which nvim` ]; then
+    alias vim=nvim
+fi
+
+
