@@ -43,4 +43,5 @@ git submodule init
 git submodule sync
 git submodule update
 
-
+tic ./xterm-256color-italic.terminfo
+tic ./screen-256color-italic.terminfo
