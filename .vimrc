@@ -114,6 +114,7 @@
     filetype plugin indent on " load filetype plugins/indent settings
     let base16colorspace=256  " Access colors present in 256 colorspace
     colorscheme base16-pop
+    highlight Comment cterm=italic
     set backspace=indent,eol,start " make backspace a more flexible
     set backup " make backup files
     set backupdir=~/.vim/backup " where to put backup files
@@ -196,7 +197,7 @@
     "let b:match_ignorecase = 1 " case is stupid
     " let perl_extended_vars=1 " highlight advanced perl vars 
                               " inside strings
-    set wildignore+=*.o,*.obj,.git,CMakeFiles,doc,CMakeCache.txt,contrib
+    set wildignore+=*.o,*.obj,.git,CMakeFiles,CMakeCache.txt,contrib
 
     let g:cpp_class_scope_highlight = 1
     
