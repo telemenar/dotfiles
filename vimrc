@@ -200,25 +200,12 @@
     set wildignore+=*.o,*.obj,.git,CMakeFiles,CMakeCache.txt,contrib
 
     let g:cpp_class_scope_highlight = 1
+
+    let g:plug_timeout = 600
     
     let g:ycm_extra_conf_globlist = ['~/src/*','~/src-p4/*','!~/*','!/*']
 
     let g:aireline_theme = 'tomorrow'
-    if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
-    endif
-
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline#extensions#tabline#left_sep = ''
-    let g:airline#extensions#tabline#left_alt_sep = ''
-    let g:airline#extensions#tabline#right_sep = ''
-    let g:airline#extensions#tabline#right_alt_sep = ''
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
     let g:airline_mode_map = {
       \ '__' : '-',
       \ 'n'  : 'N',

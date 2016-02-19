@@ -98,6 +98,12 @@ if [ "$(tty)" != "not a tty" ]; then
         fi 
     fi
 
+    if [ -x `which nvim` ]; then
+        export EDITOR=nvim;
+    else 
+        export EDITOR=vim -u ~/.emptyvimrc
+    fi
+
 fi
 
 

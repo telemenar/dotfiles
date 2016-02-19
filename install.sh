@@ -12,6 +12,8 @@ files="bashrc bash_aliases vimrc vim gitconfig tmux.conf"    # list of files/fol
 
 ##########
 
+git clean -fd . 
+
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
@@ -27,7 +29,7 @@ for file in $files; do
     echo "Moving any existing dotfiles from ~ to $olddir"
     mv ~/.$file $olddir
     echo "Creating symlink to $file in home directory."
-    ln -s $dir/.$file ~/.$file
+    ln -s $dir/$file ~/.$file
 done
 
 if [ `uname` = "Darwin" ]; then
@@ -45,3 +47,15 @@ git submodule update
 
 tic ./xterm-256color-italic.terminfo
 tic ./screen-256color-italic.terminfo
+tic ./tmux.terminfo
+
+mkdir -p ${XDG_CONFIG_HOME:=$HOME/.config}
+ln -s ~/.vim $XDG_CONFIG_HOME/nvim
+ln -s ~/.vimrc $XDG_CONFIG_HOME/nvim/init.vim
+
+rm ~/.emptyvimrc
+touch ~/.emptyvimrc
+
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+vim +PlugInstall
