@@ -18,26 +18,17 @@ if [ "$(tty)" != "not a tty" ]; then
         . ~/.bash_job
     fi
 
-    stty ixany
-    stty ixoff -ixon
-    stty stop undef
-    stty start undef
-
-    function parse_git_branch() {
-        git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-    }
-
     # User specific aliases and functions
     function set_prompt () {
         local last_command=$? # Must come first!
         PS1=""
-        local red='\[\e[00;31m\]'
+        local red='%F{red}'
         local redBold='\[\e[01;31m\]'
-        local green='\[\e[00;32m\]'
+        local green='%F{green}'
         local greenBold='\[\e[01;32m\]'
-        local yellow='\[\e[00;33m\]'
+        local yellow='%F{yellow}'
         local yellowBold='\[\e[00;33m\]'
-        local blue='\[\e[00;34m\]'
+        local blue='%F{blue}'
         local blueBold='\[\e[01;34m\]'
         local purple='\[\e[00;35m\]'
         local purpleBold='\[\e[01;35m\]'

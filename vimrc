@@ -50,19 +50,20 @@
 " }
 
 " Plugin Manager {
+"
+    " To install plugin Manager:
     " curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     "     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    " To install plugins: vim +PlugInstall
     call plug#begin('~/.vim/plugged')
 
     " YouCompleteMe
     " Clang based auto complete and symbol navigation
     " Needs some compile steps.
     Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' } 
-    " Baseline variant of this plugin
-    " Plug 'oblitum/YouCompleteMe' 
-    " Variant with automaticlly completing function parameters.
 
-    " Vim movement plugin, just recommend googling it. 
+    " Vim movement plugin, allows for cool things but has a learning curve
+    " turned it back off for me.
     " Plug 'Lokaltog/vim-easymotion'
 
     " Cpride's color scheme
@@ -71,39 +72,39 @@
     " Script for switching between headers and cpp/c files
     Plug 'vim-scripts/a.vim'
 
+    " Tweak to C++ syntax highlighting
     Plug 'octol/vim-cpp-enhanced-highlight'
 
     " Script for the vim part of rigging movement keys to be unified between
     " tmux and vim
+    " I use this to setup one set of key bindings that can move focus between
+    " vim splits and tmux splits doing sensible things.
     Plug 'christoomey/vim-tmux-navigator'
 
-    " Integrated grep like plugin
-    " Plug 'rking/ag.vim'
-    Plug 'mileszs/ack.vim'
+    " Integrated grep like plugin for ripgrep
+    Plug 'jremmen/vim-ripgrep'
 
     " Pretty status prompt
     Plug 'bling/vim-airline'
 
     " Awesome git integration
+    " Main thing I use is :Gblame
     Plug 'tpope/vim-fugitive'
-
-    " Fuzzy completion code navigation plugin
-    "Plug 'ctrlpvim/ctrlp.vim'
-    "Plug 'kien/ctrlp.vim'
 
     " Plugin outside ~/.vim/plugged with post-update hook
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
 
-    " Faster fuzzy matching for ctrlp
-    " need compilation
-    "Plug 'telemenar/ctrlp-cmatcher', { 'do': './install.sh' }
-    
     " Rtags integration
+    " This requires rtags installed and running:
+    " https://github.com/Andersbakken/rtags
     Plug 'lyuts/vim-rtags'
 
+    " This is a thing that uses ctags to find the current function and put it
+    " the statusbar
     Plug 'majutsushi/tagbar'
 
+    " Shows changed lines based on git status to the left.
     Plug 'airblade/vim-gitgutter'
 
     call plug#end()
@@ -112,7 +113,10 @@
 
 " General {
     filetype plugin indent on " load filetype plugins/indent settings
-    let base16colorspace=256  " Access colors present in 256 colorspace
+    if filereadable(expand("~/.vimrc_background"))
+	let base16colorspace=256
+	source ~/.vimrc_background
+    endif
     colorscheme base16-pop
     highlight Comment cterm=italic
     set backspace=indent,eol,start " make backspace a more flexible
@@ -268,24 +272,8 @@
     
     noremap  :A<CR> 
 
-    " The Silver Searcher
-    " Use ag over grep
+    nnoremap K :Rg <CR>
 
-    " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-    "let g:ctrlp_user_command = 'ag %s -l --ignore search_mrsparkle --ignore CMakeFiles --ignore contrib --ignore "*.js" --ignore "*.py" --ignore "*.png" --ignore "*.html" --ignore "*.css" --ignore "*.xml" -G "^.*\.(cpp\|h\|c\|.in)$" --nocolor -g ""'
-
-    " ag is fast enough that CtrlP doesn't need to cache
-    " let g:ctrlp_use_caching = 0
-
-    " bind K to grep word under cursor
-    nnoremap K :Ack! "\b<C-R><C-W>\b" "src/" "cfg/bundles/default/" "cfg/bundles/README/" <CR>
-
-
-    " Make Arrow Keys Useful Again {
-   "     map <down> <ESC>:bn<RETURN>
-   "     map <left> <ESC>:NERDTreeToggle<RETURN>
-   "     map <right> <ESC>:Tlist<RETURN>
-   "     map <up> <ESC>:bp<RETURN>
     " }
 " }
 
