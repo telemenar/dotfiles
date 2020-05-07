@@ -4,8 +4,8 @@
 "   use the "  pieces you want(and understand!).  When you copy a 
 "   .vimrc in its entirety, weird and unexpected things can happen.
 "
-"   If you find an obvious mistake hit me up at:
-"   http://robertmelton.com/contact (many forms of communication)
+"   Originally sourced from: 
+"   Robert Melton
 " }
 
 " Basics {
