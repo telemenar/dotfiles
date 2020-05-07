@@ -59,11 +59,12 @@
 
     " YouCompleteMe
     " Clang based auto complete and symbol navigation
-    " Needs some compile steps.
+    " Needs some compile steps. 
+    " Needs some helper files.
     Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' } 
 
     " Vim movement plugin, allows for cool things but has a learning curve
-    " turned it back off for me.
+    " turned it back off for me. Cool enough that I leave it in commented out.
     " Plug 'Lokaltog/vim-easymotion'
 
     " Cpride's color scheme
@@ -91,6 +92,7 @@
     " Main thing I use is :Gblame
     Plug 'tpope/vim-fugitive'
 
+    " Fuzzy find for many types of things
     " Plugin outside ~/.vim/plugged with post-update hook
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
@@ -98,6 +100,7 @@
     " Rtags integration
     " This requires rtags installed and running:
     " https://github.com/Andersbakken/rtags
+    " Requires you to compile with cmake and generate a compile_commands.json
     Plug 'lyuts/vim-rtags'
 
     " This is a thing that uses ctags to find the current function and put it
@@ -198,9 +201,6 @@
 " }
 
 " Plugin Settings {
-    "let b:match_ignorecase = 1 " case is stupid
-    " let perl_extended_vars=1 " highlight advanced perl vars 
-                              " inside strings
     set wildignore+=*.o,*.obj,.git,CMakeFiles,CMakeCache.txt,contrib
 
     let g:cpp_class_scope_highlight = 1
@@ -228,50 +228,46 @@
      let g:airline#extensions#tabline#enabled = 1
      let g:airline#extensions#tabline#show_buffers = 0
 
-     let g:ctrlp_extensions = ['tag', 'buffertag']
-     let g:ctrlp_clear_cache_on_exit = 0
-     let g:ctrlp_match_window = 'order:ttb'
-     let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-
-     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s \( -type d -name .git -prune \) -o \( -type d -name .svn -prune \) -o \( -type d -name .deps -prune \) -o \( -type d -name .libs -prune \) -o ${EXCLUDE_CONTRIB} \( -type d -path "${EXCLUDE_MINIFIED_JS}" -prune \) -o \( -type d -name logs -prune \) -o \( -type d -name CVS -prune \) -o \( -type f -name "*.[oa]" -prune \) -o \( -type f -name "*.l[oa]" -prune \) -o \( -type f -name "*.so" -prune \) -o \( -type f -name ".*.swp" -prune \) -o \( -type f -iname "*.txt" -prune \) -o \( -type f -iname "*.csv" -prune \) -o -type f']
-     let g:ctrlp_lazy_update = 100
-
-     let g:ctrlp_buftag_types = {
-                 \ 'cpp' : 
-                 \ '--extra=+q',
-                 \ } 
-
-     let g:ack_autofold_results = 1
-     let g:ackprg = "git grep -n"
-
      let g:fzf_commits_log_options = '--color=always --format="%C(auto)%h%d <%cn> %s %C(blue)%C(bold)%cr"'
      let g:fzf_layout = { 'down': '~25%' }
+
+     " This is the default plus --no-messages -- because it was showing path
+     " errors
+     let g:rg_command = 'rg --no-messages --vimgrep'
 " }
 
 " Mappings {
-    " space / shift-space scroll in normal mode
+    " fzf mappings
     noremap <leader>tt :GitFiles<CR>
     noremap <leader>tb :Buffers<CR>
     noremap <leader>tR :Tags<CR>
     noremap <leader>tr :BTags<CR>
+
+    " space / shift-space scroll in normal mode
     noremap <S-space> <C-b>
     noremap <space> <C-f>
 
+    " rtags mappings
     let g:rtagsUseDefaultMappings = 0
     noremap <C-f><C-f> :call rtags#JumpTo()<CR>
     noremap <C-f><C-i> :call rtags#SymbolInfo()<CR>
     noremap <C-f><C-r> :call rtags#FindRefs()<CR>
 
+    " split controls
     noremap <C-b> :split<CR>
     noremap <C-v> :vsplit<CR>
 
+    " Close splits/buffers
     noremap <C-g> <C-w>q
     noremap <C-G> :bd<CR>
 
+    " Escape without reaching
     inoremap jk <Esc>
     
+    " Mapping for header/source switching
     noremap  :A<CR> 
 
+    " Search for word under cursor
     nnoremap K :Rg <CR>
 
     " }
