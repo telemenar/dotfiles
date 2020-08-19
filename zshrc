@@ -15,7 +15,7 @@ fi
 alias cd..='cd ..'
 
 
-if [ -r `which nvim` ]; then
+if [ -r "$(which nvim)" ]; then
     alias vim=nvim
 fi
 
@@ -73,18 +73,21 @@ function precmd() {
 
 }
 
+
 if [ ! "$SETPATH" ] && [ -d ~/tools/bin ] ; then
     export SETPATH=1
     export PATH="$HOME/tools/bin:$PATH"
 fi
 
+
 export NINJA_STATUS="[%u/%r/%f]"
 
-if [ -x `which nvim` ]; then
-    export EDITOR=nvim;
-else 
-    export EDITOR=vim -u ~/.emptyvimrc
-fi
+
+#if [ -r "$(`which nvim`)" ]; then
+#    export EDITOR=nvim;
+#else 
+#    export EDITOR="vim -u ~/.emptyvimrc"
+#fi
 
 autoload -Uz compinit && compinit
 autoload bashcompinit && bashcompinit
@@ -106,13 +109,5 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt CORRECT
 setopt CORRECT_ALL
-
-export chief=chieftain.sv.splunk.com
-
-if [ `uname` = "Darwin" ]; then
-    if [ -f $(brew --prefix)/etc/bash_completion ]; then
-        . $(brew --prefix)/etc/bash_completion
-    fi
-fi
 
 

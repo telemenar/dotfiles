@@ -1,5 +1,6 @@
 [user]
 	name = Chris Pride
+	email = cpride@cpride.net
 [branch]
 	autosetuprebase = always
 [pack]

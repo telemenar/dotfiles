@@ -184,7 +184,7 @@
 
 " Text Formatting/Layout {
     set completeopt= " don't use a pop up menu for completions
-    set expandtab " no real tabs please!
+    "set expandtab " no real tabs please!
     set formatoptions=rq " Automatically insert comment leader on return, 
                           " and let gq format comments
     set ignorecase " case insensitive by default
