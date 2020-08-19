@@ -12,17 +12,7 @@ files="bashrc bash_aliases vimrc vim gitconfig tmux.conf zshrc"    # list of fil
 
 ##########
 
-git clean -fd . 
-
-# create dotfiles_old in homedir
-echo "Creating $olddir for backup of any existing dotfiles in ~"
-mkdir -p $olddir
-echo "...done"
-
-# change to the dotfiles directory
-echo "Changing to the $dir directory"
 cd $dir
-echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
 for file in $files; do
@@ -51,7 +41,6 @@ tic ./tmux.terminfo
 
 mkdir -p ${XDG_CONFIG_HOME:=$HOME/.config}
 ln -s ~/.vim $XDG_CONFIG_HOME/nvim
-ln -s ~/.vimrc $XDG_CONFIG_HOME/nvim/init.vim
 
 rm ~/.emptyvimrc
 touch ~/.emptyvimrc

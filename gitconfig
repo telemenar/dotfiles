@@ -81,3 +81,7 @@
     co = checkout
     ci = commit
 
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
