@@ -83,7 +83,7 @@
     Plug 'christoomey/vim-tmux-navigator'
 
     " Integrated grep like plugin for ripgrep
-    Plug 'jremmen/vim-ripgrep'
+    Plug 'telemenar/vim-ripgrep'
 
     " Pretty status prompt
     Plug 'bling/vim-airline'
@@ -106,6 +106,8 @@
     " This is a thing that uses ctags to find the current function and put it
     " the statusbar
     Plug 'majutsushi/tagbar'
+
+    Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
     " Shows changed lines based on git status to the left.
     Plug 'airblade/vim-gitgutter'
@@ -184,7 +186,7 @@
 
 " Text Formatting/Layout {
     set completeopt= " don't use a pop up menu for completions
-    "set expandtab " no real tabs please!
+    set noexpandtab " no real tabs please!
     set formatoptions=rq " Automatically insert comment leader on return, 
                           " and let gq format comments
     set ignorecase " case insensitive by default
@@ -196,7 +198,7 @@
                       " >>, << and stuff like that
     set softtabstop=4 " when hitting tab or backspace, how many spaces 
                        "should a tab be (see expandtab)
-    set tabstop=8 " real tabs should be 8, and they will show with 
+    set tabstop=4 " real tabs should be 8, and they will show with 
                    " set list on
 " }
 
@@ -234,6 +236,11 @@
      " This is the default plus --no-messages -- because it was showing path
      " errors
      let g:rg_command = 'rg --no-messages --vimgrep'
+
+     
+     let g:go_code_completion_enabled = 0
+     let g:go_doc_keywordprg_enabled = 0
+     
 " }
 
 " Mappings {
@@ -249,9 +256,10 @@
 
     " rtags mappings
     let g:rtagsUseDefaultMappings = 0
-    noremap <C-f><C-f> :call rtags#JumpTo()<CR>
-    noremap <C-f><C-i> :call rtags#SymbolInfo()<CR>
-    noremap <C-f><C-r> :call rtags#FindRefs()<CR>
+    noremap <C-f><C-f> :YcmCompleter GoDefinition <CR>
+    noremap <C-f><C-i> :YcmCompleter GetDoc <CR>
+    noremap <C-f><C-r> :YcmCompleter GoToReferences <CR>
+    noremap <C-f><C-t> :YcmCompleter GoToType <CR>
 
     " split controls
     noremap <C-b> :split<CR>
@@ -270,6 +278,19 @@
     " Search for word under cursor
     nnoremap K :Rg <CR>
 
-    " }
+" }
+
+" Custom Extension {
+    function! RipgrepFzf(query, fullscreen)
+      let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+      let initial_command = printf(command_fmt, shellescape(a:query))
+      let reload_command = printf(command_fmt, '{q}')
+      let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+      call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+    endfunction
+
+    command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+	
 " }
 
