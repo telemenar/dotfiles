@@ -1,0 +1,26 @@
+{
+	"diagnostic.errorSign": "✖",
+	"diagnostic.warningSign": "⚠",
+	"diagnostic.infoSign": "ℹ",
+	"diagnostic.hintSign": "➤",
+	"diagnostic.checkCurrentLine": true,
+	"coc.source.around.enable": false,
+	"go.goplsPath": "/home/cpride/go/bin/gopls",
+	"go.goplsOptions": {
+        "directoryFilters": ["-**/vendor", "-**/node_modules"],
+        "verboseOutput":true
+	},
+	"go.goplsUseDaemon": true,
+	"go.enable": true,
+	"suggest.maxCompleteItemCount": 20,
+	"languageserver": {},
+	"suggest.noselect": true,
+	"coc.preferences.rootPatterns": [
+		".git",
+		".hg",
+		".projections.json",
+		"go.mod"
+  ],
+  "clangd.fallbackFlags": ["-I /home/cpride/observe/code/tracing/backend/include"],
+  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/15.0.1/clangd_15.0.1/bin/clangd"
+}

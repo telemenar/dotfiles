@@ -61,7 +61,9 @@
     " Clang based auto complete and symbol navigation
     " Needs some compile steps. 
     " Needs some helper files.
-    Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' } 
+    "Plug 'Valloric/YouCompleteMe'
+
+	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
     " Vim movement plugin, allows for cool things but has a learning curve
     " turned it back off for me. Cool enough that I leave it in commented out.
@@ -74,7 +76,7 @@
     Plug 'vim-scripts/a.vim'
 
     " Tweak to C++ syntax highlighting
-    Plug 'octol/vim-cpp-enhanced-highlight'
+    "Plug 'octol/vim-cpp-enhanced-highlight'
 
     " Script for the vim part of rigging movement keys to be unified between
     " tmux and vim
@@ -101,13 +103,13 @@
     " This requires rtags installed and running:
     " https://github.com/Andersbakken/rtags
     " Requires you to compile with cmake and generate a compile_commands.json
-    Plug 'lyuts/vim-rtags'
+    "Plug 'lyuts/vim-rtags'
 
     " This is a thing that uses ctags to find the current function and put it
     " the statusbar
     Plug 'majutsushi/tagbar'
 
-    Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+    Plug 'fatih/vim-go', { 'tag':'v1.26', 'do': ':GoUpdateBinaries' }
 
     " Shows changed lines based on git status to the left.
     Plug 'airblade/vim-gitgutter'
@@ -119,17 +121,20 @@
 " General {
     filetype plugin indent on " load filetype plugins/indent settings
     if filereadable(expand("~/.vimrc_background"))
-	let base16colorspace=256
-	source ~/.vimrc_background
+		source ~/.vimrc_background
     endif
+	let base16colorspace=256
     colorscheme base16-pop
     highlight Comment cterm=italic
     set backspace=indent,eol,start " make backspace a more flexible
-    set backup " make backup files
+    set nobackup " make backup files
+    set nowritebackup " make backup files
     set backupdir=~/.vim/backup " where to put backup files
     set clipboard+=unnamed " share windows clipboard
     set directory=~/.vim/tmp " directory to place swap files in
     set fileformats=unix,dos,mac " support all three, in this order
+    set updatetime=300
+	set signcolumn=number
     set hidden " you can change buffers without saving
     " (XXX: #VIM/tpope warns the line below could break things)
     set noerrorbells " don't make noise
@@ -186,7 +191,7 @@
 
 " Text Formatting/Layout {
     set completeopt= " don't use a pop up menu for completions
-    set noexpandtab " no real tabs please!
+    set expandtab " no real tabs please!
     set formatoptions=rq " Automatically insert comment leader on return, 
                           " and let gq format comments
     set ignorecase " case insensitive by default
@@ -208,8 +213,8 @@
     let g:cpp_class_scope_highlight = 1
 
     let g:plug_timeout = 600
-    
-    let g:ycm_extra_conf_globlist = ['~/src/*','~/src-p4/*','!~/*','!/*']
+
+    "let g:ycm_extra_conf_globlist = ['~/src/*','~/src-p4/*','!~/*','!/*']
 
     let g:aireline_theme = 'tomorrow'
     let g:airline_mode_map = {
@@ -240,6 +245,8 @@
      
      let g:go_code_completion_enabled = 0
      let g:go_doc_keywordprg_enabled = 0
+     let g:go_bin_path = "/home/cpride/go/bin"
+	 " GoPath /home/cpride/observe/code/go/src/observe/
      
 " }
 
@@ -254,12 +261,59 @@
     noremap <S-space> <C-b>
     noremap <space> <C-f>
 
+
     " rtags mappings
-    let g:rtagsUseDefaultMappings = 0
-    noremap <C-f><C-f> :YcmCompleter GoDefinition <CR>
-    noremap <C-f><C-i> :YcmCompleter GetDoc <CR>
-    noremap <C-f><C-r> :YcmCompleter GoToReferences <CR>
-    noremap <C-f><C-t> :YcmCompleter GoToType <CR>
+    "let g:rtagsUseDefaultMappings = 0
+    nmap <C-f><C-f> <plug>(coc-definition)
+    nmap <C-f><C-r> <plug>(coc-references)
+    nmap <C-f><C-e> <plug>(coc-references-used)
+    nmap <C-f><C-d> <plug>(coc-format)
+    nmap <C-f><C-n> <plug>(coc-rename)
+
+    " Having longer updatetime (default is 4000 ms = 4s) leads to noticeable
+    " delays and poor user experience
+    set updatetime=300
+    
+    " Always show the signcolumn, otherwise it would shift the text each time
+    " diagnostics appear/become resolved
+    set signcolumn=yes
+    
+    " Use tab for trigger completion with characters ahead and navigate
+    " NOTE: There's always complete item selected by default, you may want to enable
+    " no select by `"suggest.noselect": true` in your configuration file
+    " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+    " other plugin before putting this into your config
+    inoremap <silent><expr> <TAB>
+          \ coc#pum#visible() ? coc#pum#next(1) :
+          \ CheckBackspace() ? "\<Tab>" :
+          \ coc#refresh()
+    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+    
+    " Make <CR> to accept selected completion item or notify coc.nvim to format
+    " <C-g>u breaks current undo, please make your own choice
+    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                                  \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    
+    function! CheckBackspace() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+    
+    " Use <c-space> to trigger completion
+    if has('nvim')
+      inoremap <silent><expr> <c-space> coc#refresh()
+    else
+      inoremap <silent><expr> <c-@> coc#refresh()
+    endif
+    
+    " Use `[g` and `]g` to navigate diagnostics
+    " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+    nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+
+    " Add `:Format` command to format current buffer
+    command! -nargs=0 Format :call CocActionAsync('format')
 
     " split controls
     noremap <C-b> :split<CR>
@@ -267,7 +321,6 @@
 
     " Close splits/buffers
     noremap <C-g> <C-w>q
-    noremap <C-G> :bd<CR>
 
     " Escape without reaching
     inoremap jk <Esc>
@@ -290,7 +343,5 @@
     endfunction
 
     command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-
-	
 " }
 

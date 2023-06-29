@@ -1,9 +1,9 @@
-.vim/backup/*
+vim/backup/*
 !.vim/backup/exist
-.vim/tmp/*
+vim/tmp/*
 !.vim/tmp/exist
-.vim/bundle/*
+vim/bundle/*
 !.vim/bundle/Vundle.vim
-.vim/doc
-.vim/plugin
+vim/doc
+vim/plugin
 
