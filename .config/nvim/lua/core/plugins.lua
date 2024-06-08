@@ -89,13 +89,13 @@ local plugins = {
   {
     'nvim-telescope/telescope.nvim', tag = '0.1.6',
     dependencies = {
-      'nvim-lua/plenary.nvim', 
+      'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope-fzf-native.nvim',
     },
   },
 
-  
 
+  'nvim-tree/nvim-web-devicons',
 
 
   'nvim-tree/nvim-tree.lua',
@@ -110,6 +110,9 @@ local plugins = {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
+    'mfussenegger/nvim-dap',
+    { 'mfussenegger/nvim-jdtls', ft = { "java" }, },
+    { "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} },
   },
 
   {

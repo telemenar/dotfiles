@@ -10,7 +10,9 @@ require("mason-lspconfig").setup({
     "lua_ls",
     "marksman",
     "pyright",
-    "rust_analyzer",
+    "jdtls",
+    "java-debug-adapter",
+    "java-test",
     "yamlls"
   }
 })
@@ -57,6 +59,7 @@ require("lspconfig").cmake.setup { capabilities = capabilities }
 require("lspconfig").cssls.setup { capabilities = capabilities }
 require("lspconfig").dockerls.setup { capabilities = capabilities }
 require("lspconfig").jsonls.setup { capabilities = capabilities }
+require('lspconfig').jdtls.setup{ capabilities = capabilities }
 require("lspconfig").lua_ls.setup {
   settings = {
     Lua = {
