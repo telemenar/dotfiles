@@ -1,0 +1,30 @@
+system: "base24"
+name: "Pop Bright"
+author: "Chris Pride (blending Pop by Chris Kempson with Tomorrow Night Bright)"
+variant: "dark"
+palette:
+  base00: "#000000"  # background - true black (from pop)
+  base01: "#202020"  # darker background (from pop)
+  base02: "#303030"  # selection (from pop)
+  base03: "#505050"  # comments (from pop)
+  base04: "#b0b0b0"  # light gray (from pop)
+  base05: "#d0d0d0"  # foreground (from pop)
+  base06: "#e0e0e0"  # light foreground (from pop)
+  base07: "#ffffff"  # bright white (from pop)
+  base08: "#d54e53"  # red - improved from pop's magenta-leaning #eb008a
+  base09: "#f29333"  # orange (from pop - already good)
+  base0A: "#f8ca12"  # yellow (from pop - already good)
+  base0B: "#37b349"  # green (from pop - already good)
+  base0C: "#00aaaa"  # cyan (from pop - already good)
+  base0D: "#1155aa"  # blue (from pop - already good)
+  base0E: "#9933cc"  # magenta - vibrant purple
+  base0F: "#7a2d00"  # brown (from pop)
+  base10: "#1a1a1a"  # darker background (slightly lighter than base00)
+  base11: "#0a0a0a"  # darkest background (slightly darker than base00)
+  base12: "#ff5555"  # bright red
+  base13: "#ffff55"  # bright yellow
+  base14: "#55ff55"  # bright green
+  base15: "#55ffff"  # bright cyan
+  base16: "#5555ff"  # bright blue
+  base17: "#ff55ff"  # bright magenta
+

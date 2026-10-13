@@ -1,0 +1,3 @@
+brew "tmux"
+brew "tinty"
+brew "git-lfs"

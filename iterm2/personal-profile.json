@@ -1,0 +1,129 @@
+{
+  "Profiles": [
+    {
+      "Normal Font": "OperatorMonoSSmNF 12",
+      "Non Ascii Font": "Monaco 12",
+      "Use Non-ASCII Font": false,
+      "Use Bold Font": true,
+      "Use Italic Font": true,
+      "Blinking Cursor": false,
+      "Scrollback Lines": 25000,
+      "Unlimited Scrollback": false,
+      "Scrollback in Alternate Screen": false,
+      "Keyboard Map": {
+        "0xf702-0x300000": {
+          "Action": 11,
+          "Text": "0x1"
+        },
+        "0x39-0x200000": {
+          "Action": 12,
+          "Text": "9"
+        },
+        "0xf702-0x280000": {
+          "Action": 10,
+          "Text": "b"
+        },
+        "0xf703-0x300000": {
+          "Action": 11,
+          "Text": "0x5"
+        },
+        "0x38-0x200000": {
+          "Action": 12,
+          "Text": "8"
+        },
+        "0xf703-0x280000": {
+          "Action": 10,
+          "Text": "f"
+        },
+        "0x3-0x200000": {
+          "Action": 11,
+          "Text": "0xd"
+        },
+        "0x32-0x200000": {
+          "Action": 12,
+          "Text": "2"
+        },
+        "0x37-0x200000": {
+          "Action": 12,
+          "Text": "7"
+        },
+        "0xf739-0x0": {
+          "Action": 13,
+          "Text": ""
+        },
+        "0xf728-0x0": {
+          "Action": 11,
+          "Text": "0x4"
+        },
+        "0x31-0x200000": {
+          "Action": 12,
+          "Text": "1"
+        },
+        "0x36-0x200000": {
+          "Action": 12,
+          "Text": "6"
+        },
+        "0x2d-0x200000": {
+          "Action": 12,
+          "Text": "-"
+        },
+        "0xf728-0x80000": {
+          "Action": 10,
+          "Text": "d"
+        },
+        "0x30-0x200000": {
+          "Action": 12,
+          "Text": "0"
+        },
+        "0x35-0x200000": {
+          "Action": 12,
+          "Text": "5"
+        },
+        "0x2b-0x200000": {
+          "Action": 12,
+          "Text": "+"
+        },
+        "0x34-0x200000": {
+          "Action": 12,
+          "Text": "4"
+        },
+        "0x2a-0x200000": {
+          "Action": 12,
+          "Text": "*"
+        },
+        "0x2f-0x200000": {
+          "Action": 12,
+          "Text": "/"
+        },
+        "0x33-0x200000": {
+          "Action": 12,
+          "Text": "3"
+        },
+        "0x2e-0x200000": {
+          "Action": 12,
+          "Text": "."
+        },
+        "0x7f-0x80000": {
+          "Action": 11,
+          "Text": "0x1b 0x7f"
+        },
+        "0x7f-0x100000": {
+          "Action": 11,
+          "Text": "0x15"
+        }
+      },
+      "Option Key Sends": 0,
+      "Right Option Key Sends": 0,
+      "Rows": 25,
+      "Columns": 80,
+      "Transparency": 0.0,
+      "Blur": false,
+      "Terminal Type": "xterm-256color",
+      "Name": "Personal \u2014 Pop Bright",
+      "Guid": "7871DF8E-925F-48D2-BBC6-4BA40A0A7063",
+      "Custom Command": "No",
+      "Custom Directory": "Home",
+      "Use Separate Colors for Light and Dark Mode": false
+    }
+  ]
+}

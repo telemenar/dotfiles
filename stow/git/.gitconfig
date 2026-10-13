@@ -1,0 +1,31 @@
+[user]
+    name = Chris Pride
+    email = cpride@cpride.net
+[branch]
+    autosetuprebase = always
+[core]
+    whitespace = space-before-tab,indent-with-non-tab,trailing-space
+    abbrev = 12
+[push]
+    default = simple
+[color]
+    ui = auto
+[pull]
+    rebase = true
+[rebase]
+    autoStash = true
+[alias]
+    st = status
+    ci = commit
+    co = !git-co
+    branch-name = rev-parse --abbrev-ref HEAD
+    publish = "!f() { git push -u origin ${1-$(git branch-name)}; }; f"
+    unpublish = "!f() { git push origin --delete ${1-$(git branch-name)}; }; f"
+    unstage = reset HEAD
+    unadd = reset HEAD
+    ours = "!f() { git checkout --ours \"$@\"; }; f"
+    theirs = "!f() { git checkout --theirs \"$@\"; }; f"
+    graphlog = log --pretty=oneline -n 500 --graph --abbrev-commit
+    is-ancestor = "!f() { test $# -eq 2 || return 2; if git merge-base --is-ancestor \"$1\" \"$2\"; then echo \"$1 is an ancestor of $2\"; elif git merge-base --is-ancestor \"$2\" \"$1\"; then echo \"$2 is an ancestor of $1\"; else echo \"$1 and $2 are not related\"; return 1; fi; }; f"
+[include]
+    path = ~/.config/work-setup/git/work.gitconfig

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Preserve the worktree-copy convenience without resetting an existing branch.
+set -euo pipefail
+if [[ $# -eq 0 || "$1" == -* ]]; then
+  exec git checkout "$@"
+fi
+branch=$1
+shift
+in_use=$(git worktree list --porcelain | awk -v wanted="refs/heads/$branch" '
+  /^worktree / { directory=substr($0,10) }
+  /^branch / && substr($0,8)==wanted { print directory; exit }
+')
+if [[ -n "$in_use" && "$in_use" != "$(git rev-parse --show-toplevel)" ]]; then
+  echo "Branch $branch is in $in_use; creating $branch-wt." >&2
+  exec git checkout -b "$branch-wt" "$branch" "$@"
+fi
+exec git checkout "$branch" "$@"

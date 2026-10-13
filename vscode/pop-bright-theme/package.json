@@ -1,0 +1,13 @@
+{
+  "name": "pop-bright-theme",
+  "displayName": "Pop Bright",
+  "publisher": "telemenar",
+  "version": "1.0.0",
+  "description": "Personal Pop Bright theme derived from Tinted Theming",
+  "engines": { "vscode": "^1.70.0" },
+  "categories": ["Themes"],
+  "license": "MIT",
+  "contributes": {
+    "themes": [{ "label": "Pop Bright (Personal)", "uiTheme": "vs-dark", "path": "./themes/pop-bright-color-theme.json" }]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "extensions.ignoreRecommendations": true,
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
+  "githubPullRequests.pullBranch": "never",
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "editor.fontFamily": "'OperatorMonoSSm Nerd Font', Menlo, Monaco, 'Courier New', monospace",
+  "workbench.colorCustomizations": {
+    "[Pop Bright (Personal)]": {
+      "sideBarSectionHeader.background": "#0a0a0a",
+      "activityBar.background": "#0c0c0c",
+      "tab.activeBackground": "#0a0a0a",
+      "breadcrumb.background": "#050505"
+    }
+  },
+  "workbench.colorTheme": "Pop Bright (Personal)",
+  "workbench.editor.enablePreview": false,
+  "chat.mcp.gallery.enabled": true
+}
