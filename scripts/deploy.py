@@ -189,7 +189,7 @@ def theme_profile():
     colors = theme['colors']
     profile = json.loads((REPO / 'iterm2/personal-profile.json').read_text())
     selected = profile['Profiles'][0]
-    mapping = {'Background Color': 'editor.background', 'Foreground Color': 'editor.foreground', 'Cursor Color': 'terminalCursor.foreground', 'Selection Color': 'editor.selectionBackground'}
+    mapping = {'Background Color': 'editor.background', 'Foreground Color': 'editor.foreground', 'Bold Color': 'terminal.ansiBrightWhite', 'Cursor Color': 'terminalCursor.foreground', 'Selection Color': 'editor.selectionBackground'}
     names = ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White']
     for i, name in enumerate(names):
         mapping[f'Ansi {i} Color'] = 'terminal.ansi' + name
@@ -226,7 +226,9 @@ def main():
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--packages', action='store_true', help='Handled by install.sh')
     parser.add_argument('--gui', action='store_true', help='Capture/install macOS app configuration')
-    parser.add_argument('--plugins', action='store_true', help='Restore Neovim plugins from the lockfile')
+    plugin_actions = parser.add_mutually_exclusive_group()
+    plugin_actions.add_argument('--plugins', action='store_true', help='Restore Neovim plugins from the lockfile')
+    plugin_actions.add_argument('--update-plugins', action='store_true', help='Update Neovim plugins and write new revisions to the lockfile')
     args = parser.parse_args()
     installer = Installer(args.target_home, args.dry_run)
     installer.stow(['zsh', 'bash', 'git', 'tmux', 'nvim', 'bin'])
@@ -241,7 +243,7 @@ def main():
             'extensions': json.dumps([{'identifier': {'id': line}} for line in (REPO / 'vscode/extensions.personal.txt').read_text().splitlines() if line and not line.startswith('#')])
         }, indent=2) + '\n')
     installer.finish()
-    if args.plugins and not args.dry_run:
+    if (args.plugins or args.update_plugins) and not args.dry_run:
         environment = dict(os.environ, HOME=str(installer.home), XDG_CONFIG_HOME=str(installer.home / '.config'), XDG_DATA_HOME=str(installer.home / '.local/share'), XDG_STATE_HOME=str(installer.home / '.local/state'), XDG_CACHE_HOME=str(installer.home / '.cache'))
         runtime = Installer(installer.home, label='plugins')
         records = []
@@ -251,7 +253,8 @@ def main():
         try:
             environment['DOTFILES_OFFLINE'] = '1'
             config = json.dumps(str(REPO / 'stow/nvim/.config/nvim'))
-            subprocess.run(['nvim', '--headless', '-u', 'NONE', '--cmd', 'lua vim.opt.rtp:prepend(' + config + ')', '-c', 'lua require("core.plugins")', '+Lazy! restore', '+qa'], env=environment, check=True)
+            lazy_action = '+Lazy! update' if args.update_plugins else '+Lazy! restore'
+            subprocess.run(['nvim', '--headless', '-u', 'NONE', '--cmd', 'lua vim.opt.rtp:prepend(' + config + ')', '-c', 'lua require("core.plugins")', lazy_action, '+Lazy! build telescope-fzf-native.nvim', '+qa'], env=environment, check=True)
             subprocess.run(['nvim', '--headless', '-c', 'luafile ' + str(REPO / 'scripts/install-language-tools.lua'), '+qa'], env=environment, check=True)
         finally:
             for target, entry in records:

@@ -9,12 +9,17 @@ in the separate employee repository's `dev-setup/` directory.
 ```sh
 ./install.sh --dry-run --gui
 ./install.sh --packages --gui --plugins
+./install.sh --update-plugins
 ```
 
 The default invocation installs configuration only. `--packages` installs the
 curated Brewfile without upgrading existing packages or cleaning other packages.
 `--gui` installs iTerm2 and VS Code when combined with `--packages`, and writes
-their portable configuration. `--plugins` restores Neovim's plugin lockfile.
+their portable configuration. `--plugins` restores Neovim's plugin lockfile
+and installs any missing configured Mason tools, then builds Telescope's native
+FZF extension. `--update-plugins` also rebuilds that extension after updating.
+Use `--update-plugins` when you intentionally want to upgrade Lazy-managed
+plugins; it writes the resulting revisions to `stow/nvim/.config/nvim/lazy-lock.json`.
 Linux config-only installation requires Python 3 and GNU Stow; GUI deployment is
 for macOS. `Brewfile.optional` contains tmux, Tinty, and Git LFS, independently
 selectable. No login-shell change, GNU-utility override, npm-prefix change, or
@@ -23,7 +28,12 @@ AI-provider configuration is performed.
 Stow uses individual file links (`--no-folding`), so application directories can
 also contain private files. Neovim requires 0.11 or later for the modern LSP API.
 Treesitter deliberately retains its locked `master` API. Lazy's checker is off;
-updates should be explicit and reviewed alongside `lazy-lock.json`.
+updates should be explicit and reviewed alongside `lazy-lock.json`. In Neovim,
+`:Lazy restore` installs the committed versions, while `:Lazy update` upgrades
+plugins and changes the lockfile. `:Lazy sync` also removes plugins no longer in
+the config. For Mason tools, open `:Mason`; press `U` to update all listed
+outdated tools or `u` for the selected tool. `:MasonUpdate` refreshes package
+registry data, but does not itself upgrade installed tools.
 
 ## Backups and rollback
 

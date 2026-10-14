@@ -1,4 +1,6 @@
 import importlib.util
+import contextlib
+import io
 import json
 import os
 from pathlib import Path
@@ -6,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('deploy', ROOT / 'scripts/deploy.py')
@@ -14,6 +17,26 @@ spec.loader.exec_module(deploy)
 
 
 class InstallationTests(unittest.TestCase):
+    def test_generated_iterm_profile_uses_supported_directory_mode(self):
+        profile = json.loads(deploy.theme_profile())['Profiles'][0]
+        self.assertEqual(profile['Custom Directory'], 'No')
+        self.assertTrue(profile['Use Bright Bold'])
+        self.assertEqual(profile['Bold Color'], {'Red Component': 1.0, 'Green Component': 1.0, 'Blue Component': 1.0, 'Color Space': 'sRGB'})
+        self.assertIsInstance(profile['Keyboard Map'], dict)
+        self.assertIsInstance(profile['Normal Font'], str)
+
+    def test_update_plugins_runs_lazy_update_and_install_restores_lockfile(self):
+        for option, lazy_command in [('--plugins', '+Lazy! restore'), ('--update-plugins', '+Lazy! update')]:
+            with self.subTest(option=option), tempfile.TemporaryDirectory(prefix='dotfiles nvim ') as temporary:
+                with patch.object(sys, 'argv', ['deploy.py', '--target-home', temporary, option]), patch.object(deploy.subprocess, 'run') as run, patch.object(deploy.Installer, 'stow'), contextlib.redirect_stdout(io.StringIO()):
+                    deploy.main()
+                commands = [call.args[0] for call in run.call_args_list]
+                nvim_commands = [command for command in commands if command and command[0] == 'nvim']
+                self.assertEqual(len(nvim_commands), 2)
+                self.assertIn(lazy_command, nvim_commands[0])
+                self.assertIn('+Lazy! build telescope-fzf-native.nvim', nvim_commands[0])
+                self.assertIn('scripts/install-language-tools.lua', nvim_commands[1][-2])
+
     def test_source_files_are_not_ignored(self):
         files = []
         for directory, directories, names in os.walk(ROOT):

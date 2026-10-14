@@ -14,7 +14,10 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = {
 
   {
-      "tinted-theming/tinted-nvim"
+    "tinted-theming/tinted-nvim",
+    version = "1.*",
+    priority = 1000,
+    lazy = false,
   },
   "neovim/nvim-lspconfig",
   { "nvim-treesitter/nvim-treesitter", branch = "master" },

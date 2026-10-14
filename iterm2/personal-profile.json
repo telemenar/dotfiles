@@ -5,6 +5,7 @@
       "Non Ascii Font": "Monaco 12",
       "Use Non-ASCII Font": false,
       "Use Bold Font": true,
+      "Use Bright Bold": true,
       "Use Italic Font": true,
       "Blinking Cursor": false,
       "Scrollback Lines": 25000,
@@ -122,7 +123,7 @@
       "Name": "Personal \u2014 Pop Bright",
       "Guid": "7871DF8E-925F-48D2-BBC6-4BA40A0A7063",
       "Custom Command": "No",
-      "Custom Directory": "Home",
+      "Custom Directory": "No",
       "Use Separate Colors for Light and Dark Mode": false
     }
   ]

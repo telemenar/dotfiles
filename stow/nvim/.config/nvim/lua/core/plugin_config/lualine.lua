@@ -1,7 +1,7 @@
 require('lualine').setup {
   options = {
     icons_enabled = true,
-    theme = 'auto',
+    theme = 'tinted',
   },
   sections = {
     lualine_a = { 'mode',
@@ -13,4 +13,3 @@ require('lualine').setup {
     }
   }
 }
-
